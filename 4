@@ -1,0 +1,470 @@
+-- Custom Dark UI
+-- UI ONLY
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local Player = Players.LocalPlayer
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "CustomDarkUI"
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.Parent = Player:WaitForChild("PlayerGui")
+
+local function Make(class, props, parent)
+    local obj = Instance.new(class)
+    for k, v in pairs(props) do
+        obj[k] = v
+    end
+    obj.Parent = parent
+    return obj
+end
+
+local function Corner(obj, radius)
+    Make("UICorner", {
+        CornerRadius = UDim.new(0, radius)
+    }, obj)
+end
+
+local function Line(obj)
+    Make("UIStroke", {
+        Color = Color3.fromRGB(42, 42, 47),
+        Thickness = 1,
+        Transparency = 0.25
+    }, obj)
+end
+
+local function Text(parent, text, size, color)
+    return Make("TextLabel", {
+        Text = text,
+        Font = Enum.Font.GothamMedium,
+        TextSize = size,
+        TextColor3 = color,
+        BackgroundTransparency = 1,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center
+    }, parent)
+end
+
+-- MAIN
+local Main = Make("Frame", {
+    Size = UDim2.fromOffset(900, 560),
+    Position = UDim2.new(0.5, -450, 0.5, -280),
+    BackgroundColor3 = Color3.fromRGB(14, 14, 17),
+    BorderSizePixel = 0
+}, Gui)
+
+Line(Main)
+
+-- TOP BAR
+local Top = Make("Frame", {
+    Size = UDim2.new(1, 0, 0, 76),
+    BackgroundColor3 = Color3.fromRGB(13, 13, 16),
+    BorderSizePixel = 0
+}, Main)
+
+-- ICON BUTTON
+local function TopButton(symbol, x)
+    local b = Make("TextButton", {
+        Size = UDim2.fromOffset(54, 54),
+        Position = UDim2.fromOffset(x, 11),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 19),
+        Text = symbol,
+        TextColor3 = Color3.fromRGB(235, 235, 240),
+        Font = Enum.Font.GothamBold,
+        TextSize = 25,
+        AutoButtonColor = false
+    }, Top)
+
+    Corner(b, 27)
+
+    b.MouseEnter:Connect(function()
+        TweenService:Create(b, TweenInfo.new(.12), {
+            BackgroundColor3 = Color3.fromRGB(28, 28, 33)
+        }):Play()
+    end)
+
+    b.MouseLeave:Connect(function()
+        TweenService:Create(b, TweenInfo.new(.12), {
+            BackgroundColor3 = Color3.fromRGB(15, 15, 19)
+        }):Play()
+    end)
+
+    return b
+end
+
+TopButton("■", 18)
+TopButton("☰", 82)
+TopButton("▱", 146)
+TopButton("♩", 210)
+TopButton("♧", 274)
+TopButton("HD", 338)
+
+-- CLOSE / MINIMIZE
+local Min = Make("TextButton", {
+    Size = UDim2.fromOffset(40, 40),
+    Position = UDim2.new(1, -90, 0, 18),
+    BackgroundTransparency = 1,
+    Text = "—",
+    TextColor3 = Color3.fromRGB(210, 210, 215),
+    Font = Enum.Font.GothamBold,
+    TextSize = 22
+}, Top)
+
+local Close = Make("TextButton", {
+    Size = UDim2.fromOffset(40, 40),
+    Position = UDim2.new(1, -45, 0, 18),
+    BackgroundTransparency = 1,
+    Text = "×",
+    TextColor3 = Color3.fromRGB(230, 230, 235),
+    Font = Enum.Font.Gotham,
+    TextSize = 28
+}, Top)
+
+-- STATS BAR
+local Stats = Make("Frame", {
+    Size = UDim2.new(1, 0, 0, 96),
+    Position = UDim2.fromOffset(0, 76),
+    BackgroundColor3 = Color3.fromRGB(16, 16, 20),
+    BorderSizePixel = 0
+}, Main)
+
+local statNames = {
+    {"Bộ Nhớ", "1076.55 MB"},
+    {"CPU", "16.10 ms"},
+    {"GPU", "15.56 ms"},
+    {"Gửi", "51.61 KB/s"},
+    {"Đã Nhận", "51.61 KB/s"},
+    {"NetworkPing", "49 ms"}
+}
+
+for i, data in ipairs(statNames) do
+    local w = 150
+    local x = (i - 1) * w
+
+    local box = Make("Frame", {
+        Size = UDim2.fromOffset(w, 96),
+        Position = UDim2.fromOffset(x, 0),
+        BackgroundColor3 = Color3.fromRGB(16, 16, 20),
+        BorderSizePixel = 0
+    }, Stats)
+
+    Text(box, data[1], 14,
+        Color3.fromRGB(235,235,238)
+    ).Position = UDim2.fromOffset(18, 13)
+
+    Text(box, data[2], 12,
+        Color3.fromRGB(225,225,230)
+    ).Position = UDim2.fromOffset(18, 35)
+
+    local bar = Make("Frame", {
+        Size = UDim2.fromOffset(70, 5),
+        Position = UDim2.fromOffset(18, 63),
+        BackgroundColor3 = i == 2 or i == 3
+            and Color3.fromRGB(100, 210, 45)
+            or Color3.fromRGB(215, 220, 25),
+        BorderSizePixel = 0
+    }, box)
+
+    Corner(bar, 3)
+
+    if i ~= #statNames then
+        Make("Frame", {
+            Size = UDim2.new(0, 1, 1, -15),
+            Position = UDim2.new(1, -1, 0, 8),
+            BackgroundColor3 = Color3.fromRGB(40,40,45),
+            BorderSizePixel = 0
+        }, box)
+    end
+end
+
+-- CENTER AVATAR / LOGO
+local Logo = Make("ImageButton", {
+    Size = UDim2.fromOffset(72, 72),
+    Position = UDim2.new(0.5, -36, 0, 88),
+    BackgroundColor3 = Color3.fromRGB(15,15,19),
+    Image = "",
+    AutoButtonColor = false
+}, Main)
+
+Corner(Logo, 14)
+
+Make("UIStroke", {
+    Color = Color3.fromRGB(50, 155, 245),
+    Thickness = 3
+}, Logo)
+
+Text(Logo, "◆", 30,
+    Color3.fromRGB(170,170,180)
+).Size = UDim2.fromScale(1,1)
+Logo:FindFirstChildOfClass("TextLabel").TextXAlignment =
+    Enum.TextXAlignment.Center
+
+-- BODY
+local Body = Make("Frame", {
+    Size = UDim2.new(1, 0, 1, -172),
+    Position = UDim2.fromOffset(0, 172),
+    BackgroundColor3 = Color3.fromRGB(14,14,17),
+    BorderSizePixel = 0
+}, Main)
+
+-- SIDEBAR
+local Side = Make("Frame", {
+    Size = UDim2.fromOffset(240, 388),
+    BackgroundColor3 = Color3.fromRGB(14,14,17),
+    BorderSizePixel = 0
+}, Body)
+
+local SideLine = Make("Frame", {
+    Size = UDim2.new(0,1,1,0),
+    Position = UDim2.new(1,-1,0,0),
+    BackgroundColor3 = Color3.fromRGB(38,38,43),
+    BorderSizePixel = 0
+}, Side)
+
+local categories = {
+    "Combat",
+    "Detections",
+    "Visuals",
+    "Player",
+    "Sword",
+    "Avatar",
+    "World",
+    "Blatant",
+    "Misc",
+    "GUI"
+}
+
+local Buttons = {}
+local Pages = {}
+
+for i, name in ipairs(categories) do
+    local Button = Make("TextButton", {
+        Size = UDim2.new(1, -22, 0, 52),
+        Position = UDim2.fromOffset(11, 10 + ((i-1)*52)),
+        BackgroundColor3 = Color3.fromRGB(14,14,17),
+        Text = name,
+        TextColor3 = Color3.fromRGB(150,150,160),
+        TextSize = 15,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        AutoButtonColor = false
+    }, Side)
+
+    Make("UIPadding", {
+        PaddingLeft = UDim.new(0, 16)
+    }, Button)
+
+    Corner(Button, 12)
+
+    Buttons[name] = Button
+
+    local Page = Make("ScrollingFrame", {
+        Size = UDim2.new(1, -265, 1, -20),
+        Position = UDim2.fromOffset(255, 10),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(80,80,90),
+        CanvasSize = UDim2.new(0,0,0,0),
+        Visible = false
+    }, Body)
+
+    Make("UIGridLayout", {
+        CellSize = UDim2.fromOffset(280, 100),
+        CellPadding = UDim2.fromOffset(12,12),
+        SortOrder = Enum.SortOrder.LayoutOrder
+    }, Page)
+
+    Pages[name] = Page
+end
+
+-- CARD
+local function AddCard(pageName, title, description)
+    local page = Pages[pageName]
+
+    local Card = Make("Frame", {
+        Size = UDim2.fromOffset(280,100),
+        BackgroundColor3 = Color3.fromRGB(21,21,26),
+        BorderSizePixel = 0
+    }, page)
+
+    Corner(Card, 9)
+    Line(Card)
+
+    Text(Card, title, 14,
+        Color3.fromRGB(235,235,240)
+    ).Position = UDim2.fromOffset(15,12)
+
+    local desc = Text(Card, description, 11,
+        Color3.fromRGB(125,125,135)
+    )
+
+    desc.Position = UDim2.fromOffset(15,36)
+    desc.Size = UDim2.new(1,-30,0,35)
+    desc.TextWrapped = true
+    desc.TextYAlignment = Enum.TextYAlignment.Top
+
+    local Toggle = Make("TextButton", {
+        Size = UDim2.fromOffset(38,21),
+        Position = UDim2.new(1,-53,1,-31),
+        BackgroundColor3 = Color3.fromRGB(45,45,52),
+        Text = "",
+        AutoButtonColor = false
+    }, Card)
+
+    Corner(Toggle, 12)
+
+    local Dot = Make("Frame", {
+        Size = UDim2.fromOffset(15,15),
+        Position = UDim2.fromOffset(3,3),
+        BackgroundColor3 = Color3.fromRGB(155,155,160),
+        BorderSizePixel = 0
+    }, Toggle)
+
+    Corner(Dot, 10)
+
+    local enabled = false
+
+    Toggle.MouseButton1Click:Connect(function()
+        enabled = not enabled
+
+        TweenService:Create(Toggle,TweenInfo.new(.15),{
+            BackgroundColor3 = enabled
+                and Color3.fromRGB(55,125,225)
+                or Color3.fromRGB(45,45,52)
+        }):Play()
+
+        TweenService:Create(Dot,TweenInfo.new(.15),{
+            Position = enabled
+                and UDim2.fromOffset(20,3)
+                or UDim2.fromOffset(3,3)
+        }):Play()
+    end)
+end
+
+-- DEMO CONTENT
+AddCard("Combat","Parry Visualizer",
+    "Shows a visual indicator around your character.")
+
+AddCard("Combat","Ball Indicator",
+    "Shows ball direction on screen.")
+
+AddCard("Detections","Ball Velocity",
+    "Displays current and peak ball speed.")
+
+AddCard("Detections","Distance",
+    "Shows distance information.")
+
+AddCard("Visuals","Ability ESP",
+    "Displays ability information.")
+
+AddCard("Visuals","No Render",
+    "Changes visual rendering options.")
+
+AddCard("Player","Movement",
+    "Movement configuration.")
+
+AddCard("Sword","Sword Trail",
+    "Sword visual configuration.")
+
+AddCard("Avatar","Avatar ESP",
+    "Avatar visual configuration.")
+
+AddCard("World","World Effects",
+    "World visual settings.")
+
+AddCard("Blatant","Example Toggle",
+    "UI placeholder only.")
+
+AddCard("Misc","Notifications",
+    "Enable interface notifications.")
+
+-- PAGE SWITCH
+local function Select(name)
+    for n, page in pairs(Pages) do
+        page.Visible = n == name
+
+        if n == name then
+            Buttons[n].BackgroundColor3 =
+                Color3.fromRGB(28,28,34)
+
+            Buttons[n].TextColor3 =
+                Color3.fromRGB(240,240,245)
+        else
+            Buttons[n].BackgroundColor3 =
+                Color3.fromRGB(14,14,17)
+
+            Buttons[n].TextColor3 =
+                Color3.fromRGB(150,150,160)
+        end
+    end
+end
+
+for name, button in pairs(Buttons) do
+    button.MouseButton1Click:Connect(function()
+        Select(name)
+    end)
+end
+
+Select("Combat")
+
+-- CLOSE
+Close.MouseButton1Click:Connect(function()
+    Gui:Destroy()
+end)
+
+-- MINIMIZE
+local minimized = false
+
+Min.MouseButton1Click:Connect(function()
+    minimized = not minimized
+
+    Body.Visible = not minimized
+    Stats.Visible = not minimized
+
+    Main.Size = minimized
+        and UDim2.fromOffset(900,76)
+        or UDim2.fromOffset(900,560)
+end)
+
+-- DRAG
+local dragging = false
+local dragStart
+local startPosition
+
+Top.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        dragging = true
+        dragStart = input.Position
+        startPosition = Main.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if not dragging then return end
+
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        local delta = input.Position - dragStart
+
+        Main.Position = UDim2.new(
+            startPosition.X.Scale,
+            startPosition.X.Offset + delta.X,
+            startPosition.Y.Scale,
+            startPosition.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
