@@ -1,0 +1,115 @@
+-- Tải Maclib UI Library (Thư viện chuẩn của Zenthra UI)
+local Maclib = loadstring(game:HttpGet("https://raw.githubusercontent.com/CoreX-UI/Maclib/main/maclib.lua"))()
+
+-- Tạo Window chính
+local Window = Maclib:CreateWindow({
+    Name = "Zenthra",
+    Subtitle = "",
+    Size = UDim2.fromOffset(600, 420),
+    Dragable = true,
+    Theme = "Dark",
+})
+
+-- Tạo các Group Tab ở Sidebar bên trái
+local VisualsTab = Window:Tab({ Name = "Visuals", Icon = "eye" })
+local CombatTab = Window:Tab({ Name = "Combat", Icon = "swords" })
+local DetectionsTab = Window:Tab({ Name = "Detections", Icon = "shield-alert" })
+local PlayerTab = Window:Tab({ Name = "Player", Icon = "user" })
+local SwordTab = Window:Tab({ Name = "Sword", Icon = "sword" })
+
+-- Chia cột bên phải thành 2 Section (Cột Trái & Cột Phải) giống hệt ảnh
+local LeftColumn = VisualsTab:Section({ Name = "Visual Options", Side = "Left" })
+local RightColumn = VisualsTab:Section({ Name = "Display Options", Side = "Right" })
+
+--- ==================== CỘT BÊN TRÁI ====================
+
+-- 1. Parry Visualizer Card
+LeftColumn:Toggle({
+    Name = "Parry Visualizer",
+    Description = "shows a neon ring around your character",
+    Default = false,
+    Callback = function(Value)
+        print("Parry Visualizer:", Value)
+    end,
+}):AddKeybind({
+    Default = Enum.KeyCode.Unknown, -- Hiển thị badge "None"
+    Callback = function() end
+})
+
+-- 2. Ability ESP Card
+LeftColumn:Toggle({
+    Name = "Ability ESP",
+    Description = "shows player equipped abilities",
+    Default = false,
+    Callback = function(Value)
+        print("Ability ESP:", Value)
+    end,
+}):AddKeybind({
+    Default = Enum.KeyCode.Unknown,
+    Callback = function() end
+})
+
+-- 3. Ball Velocity Card
+LeftColumn:Toggle({
+    Name = "Ball Velocity",
+    Description = "displays current and peak ball speed",
+    Default = false,
+    Callback = function(Value)
+        print("Ball Velocity:", Value)
+    end,
+}):AddKeybind({
+    Default = Enum.KeyCode.Unknown,
+    Callback = function() end
+})
+
+
+--- ==================== CỘT BÊN PHẢI ====================
+
+-- 1. Ball Indicator Card
+RightColumn:Toggle({
+    Name = "Ball Indicator",
+    Description = "shows ball direction on screen",
+    Default = false,
+    Callback = function(Value)
+        print("Ball Indicator:", Value)
+    end,
+}):AddKeybind({
+    Default = Enum.KeyCode.Unknown,
+    Callback = function() end
+})
+
+-- 2. No Render Card
+RightColumn:Toggle({
+    Name = "No Render",
+    Description = "disables client effects",
+    Default = false,
+    Callback = function(Value)
+        print("No Render:", Value)
+    end,
+}):AddKeybind({
+    Default = Enum.KeyCode.Unknown,
+    Callback = function() end
+})
+
+-- 3. Plushies Card
+RightColumn:Toggle({
+    Name = "Plushies",
+    Description = "animated plushies that follow you",
+    Default = false,
+    Callback = function(Value)
+        print("Plushies:", Value)
+    end,
+}):AddKeybind({
+    Default = Enum.KeyCode.Unknown,
+    Callback = function() end
+})
+
+-- 4. Shield & Slash FX Card
+RightColumn:Toggle({
+    Name = "Shield & Slash FX",
+    Description = "Customize particle colors",
+    Default = false,
+    Callback = function(Value)
+        print("Shield & Slash FX:", Value)
+    end,
+})
