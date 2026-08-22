@@ -1,0 +1,309 @@
+-- Zenthra-style Custom UI
+-- UI only / no game automation
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local Player = Players.LocalPlayer
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "CustomUI"
+Gui.ResetOnSpawn = false
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Gui.Parent = Player:WaitForChild("PlayerGui")
+
+local function New(class, props, parent)
+    local o = Instance.new(class)
+    for k,v in pairs(props) do o[k] = v end
+    o.Parent = parent
+    return o
+end
+
+local function Corner(obj, radius)
+    New("UICorner", {CornerRadius = UDim.new(0, radius)}, obj)
+end
+
+local function Stroke(obj, transparency)
+    New("UIStroke", {
+        Color = Color3.fromRGB(55,55,65),
+        Transparency = transparency or 0,
+        Thickness = 1
+    }, obj)
+end
+
+local function Label(text, size, color, parent)
+    return New("TextLabel", {
+        Text = text,
+        Font = Enum.Font.GothamMedium,
+        TextSize = size,
+        TextColor3 = color,
+        BackgroundTransparency = 1,
+        TextXAlignment = Enum.TextXAlignment.Left
+    }, parent)
+end
+
+-- Main window
+local Main = New("Frame", {
+    Size = UDim2.fromOffset(760, 500),
+    Position = UDim2.new(.5,-380,.5,-250),
+    BackgroundColor3 = Color3.fromRGB(15,15,18),
+    BorderSizePixel = 0
+}, Gui)
+Corner(Main, 12)
+Stroke(Main)
+
+-- Top bar
+local Top = New("Frame", {
+    Size = UDim2.new(1,0,0,58),
+    BackgroundTransparency = 1
+}, Main)
+
+local Title = Label("Zenthra", 17, Color3.fromRGB(235,235,240), Top)
+Title.Position = UDim2.fromOffset(22,17)
+Title.Size = UDim2.fromOffset(180,25)
+
+local Search = New("TextButton", {
+    Size = UDim2.fromOffset(35,35),
+    Position = UDim2.new(1,-48,0,11),
+    Text = "⌕",
+    Font = Enum.Font.GothamBold,
+    TextSize = 22,
+    TextColor3 = Color3.fromRGB(170,170,180),
+    BackgroundColor3 = Color3.fromRGB(25,25,29),
+    AutoButtonColor = false
+}, Top)
+Corner(Search,8)
+
+-- Sidebar
+local Side = New("Frame", {
+    Size = UDim2.new(0,175,1,-58),
+    Position = UDim2.fromOffset(0,58),
+    BackgroundTransparency = 1
+}, Main)
+
+local SideLayout = New("UIListLayout", {
+    Padding = UDim.new(0,5),
+    SortOrder = Enum.SortOrder.LayoutOrder
+}, Side)
+
+New("UIPadding", {
+    PaddingTop = UDim.new(0,8),
+    PaddingLeft = UDim.new(0,10),
+    PaddingRight = UDim.new(0,10)
+}, Side)
+
+local Pages = {}
+local Buttons = {}
+
+local categories = {
+    "Combat",
+    "Detections",
+    "Visuals",
+    "Player",
+    "Sword",
+    "Avatar",
+    "World",
+    "Blatant",
+    "Misc",
+    "GUI"
+}
+
+local Content = New("Frame", {
+    Size = UDim2.new(1,-195,1,-75),
+    Position = UDim2.fromOffset(185,65),
+    BackgroundTransparency = 1
+}, Main)
+
+local function MakePage(name)
+    local page = New("ScrollingFrame", {
+        Size = UDim2.fromScale(1,1),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(80,80,90),
+        CanvasSize = UDim2.new(0,0,0,0),
+        Visible = false
+    }, Content)
+
+    New("UIGridLayout", {
+        CellSize = UDim2.fromOffset(265,92),
+        CellPadding = UDim2.fromOffset(10,10),
+        SortOrder = Enum.SortOrder.LayoutOrder
+    }, page)
+
+    Pages[name] = page
+    return page
+end
+
+for _,name in ipairs(categories) do
+    local page = MakePage(name)
+
+    local b = New("TextButton", {
+        Size = UDim2.new(1,0,0,36),
+        Text = "   "..name,
+        Font = Enum.Font.GothamMedium,
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(155,155,165),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        BackgroundColor3 = Color3.fromRGB(15,15,18),
+        AutoButtonColor = false,
+        LayoutOrder = table.find(categories,name)
+    }, Side)
+
+    Corner(b,7)
+    Buttons[name] = b
+
+    b.MouseEnter:Connect(function()
+        if not page.Visible then
+            TweenService:Create(b,TweenInfo.new(.12),{
+                BackgroundColor3 = Color3.fromRGB(23,23,28)
+            }):Play()
+        end
+    end)
+
+    b.MouseLeave:Connect(function()
+        if not page.Visible then
+            TweenService:Create(b,TweenInfo.new(.12),{
+                BackgroundColor3 = Color3.fromRGB(15,15,18)
+            }):Play()
+        end
+    end)
+
+    b.MouseButton1Click:Connect(function()
+        for n,p in pairs(Pages) do
+            p.Visible = n == name
+            Buttons[n].BackgroundColor3 =
+                n == name and Color3.fromRGB(35,35,42)
+                or Color3.fromRGB(15,15,18)
+
+            Buttons[n].TextColor3 =
+                n == name and Color3.fromRGB(235,235,240)
+                or Color3.fromRGB(155,155,165)
+        end
+    end)
+end
+
+local function AddToggle(pageName, title, desc)
+    local page = Pages[pageName]
+
+    local card = New("Frame", {
+        BackgroundColor3 = Color3.fromRGB(22,22,27),
+        BorderSizePixel = 0
+    }, page)
+    Corner(card,8)
+    Stroke(card,0.5)
+
+    local t = Label(title,14,Color3.fromRGB(235,235,240),card)
+    t.Position = UDim2.fromOffset(14,12)
+    t.Size = UDim2.new(1,-65,0,20)
+
+    local d = Label(desc or "",11,Color3.fromRGB(125,125,135),card)
+    d.Position = UDim2.fromOffset(14,34)
+    d.Size = UDim2.new(1,-25,0,28)
+    d.TextWrapped = true
+
+    local toggle = New("TextButton", {
+        Size = UDim2.fromOffset(36,20),
+        Position = UDim2.new(1,-50,0,13),
+        Text = "",
+        BackgroundColor3 = Color3.fromRGB(45,45,52),
+        AutoButtonColor = false
+    }, card)
+    Corner(toggle,10)
+
+    local dot = New("Frame", {
+        Size = UDim2.fromOffset(14,14),
+        Position = UDim2.fromOffset(3,3),
+        BackgroundColor3 = Color3.fromRGB(150,150,155),
+        BorderSizePixel = 0
+    }, toggle)
+    Corner(dot,10)
+
+    local enabled = false
+
+    toggle.MouseButton1Click:Connect(function()
+        enabled = not enabled
+
+        TweenService:Create(toggle,TweenInfo.new(.15),{
+            BackgroundColor3 = enabled
+                and Color3.fromRGB(95,75,180)
+                or Color3.fromRGB(45,45,52)
+        }):Play()
+
+        TweenService:Create(dot,TweenInfo.new(.15),{
+            Position = enabled
+                and UDim2.fromOffset(19,3)
+                or UDim2.fromOffset(3,3)
+        }):Play()
+    end)
+
+    return function()
+        return enabled
+    end
+end
+
+-- Example cards
+AddToggle("Combat","Parry Visualizer","Shows a visual indicator around your character.")
+AddToggle("Combat","Ball Indicator","Displays ball direction on the screen.")
+AddToggle("Combat","Target Info","Displays information about the current target.")
+AddToggle("Detections","Ball Velocity","Displays current and peak ball speed.")
+AddToggle("Detections","Distance","Shows distance to nearby players.")
+AddToggle("Visuals","Ability ESP","Displays ability information.")
+AddToggle("Visuals","No Render","Reduces visual effects.")
+AddToggle("Visuals","Player Highlights","Highlights nearby players.")
+AddToggle("Player","Walk Speed","UI placeholder for movement settings.")
+AddToggle("Player","Jump Power","UI placeholder for jump settings.")
+AddToggle("Sword","Sword Trail","Custom sword visual settings.")
+AddToggle("Avatar","Avatar ESP","Displays avatar information.")
+AddToggle("World","World Effects","World visual settings.")
+AddToggle("Misc","Notifications","Toggle UI notifications.")
+AddToggle("GUI","Keybinds","Configure interface keybinds.")
+
+-- First page
+Pages["Combat"].Visible = true
+Buttons["Combat"].BackgroundColor3 = Color3.fromRGB(35,35,42)
+Buttons["Combat"].TextColor3 = Color3.fromRGB(235,235,240)
+
+-- Drag window
+local dragging = false
+local dragStart
+local startPos
+
+Top.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    ) then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Right Shift = hide/show
+UIS.InputBegan:Connect(function(input, processed)
+    if processed then return end
+
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        Main.Visible = not Main.Visible
+    end
+end)
