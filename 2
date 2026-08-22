@@ -1,0 +1,81 @@
+-- Tải thư viện WindUI (Thư viện UI chuẩn Dark/Modern cho Roblox)
+local WindUI = loadstring(game:HttpGet("https://tree-hub.vercel.app/api/UI/WindUI"))()
+
+-- Tạo cửa sổ chính (Window)
+local Window = WindUI:CreateWindow({
+    Title = "Zenthra",
+    Icon = "rbxassetid://10723345884", -- Icon góc trên
+    Author = "by Script Hub",
+    Folder = "ZenthraConfig",
+    Size = UDim2.fromOffset(580, 400),
+    Transparent = true,
+    Theme = "Dark", -- Giao diện tối giống ảnh
+})
+
+-- Tạo các Tab bên Sidebar trái
+local CombatTab = Window:Tab({ Name = "Combat", Icon = "swords" })
+local DetectionsTab = Window:Tab({ Name = "Detections", Icon = "shield" })
+local VisualsTab = Window:Tab({ Name = "Visuals", Icon = "eye" })
+local PlayerTab = Window:Tab({ Name = "Player", Icon = "user" })
+
+-- THÊM CÁC TÍNH NĂNG TRONG TAB VISUALS (Giống ảnh mẫu)
+
+-- Card 1: Parry Visualizer
+VisualsTab:Toggle({
+    Title = "Parry Visualizer",
+    Desc = "shows a neon ring around your character",
+    Value = false,
+    Callback = function(Value)
+        print("Parry Visualizer:", Value)
+    end,
+})
+
+-- Card 2: Ball Indicator
+VisualsTab:Toggle({
+    Title = "Ball Indicator",
+    Desc = "shows ball direction on screen",
+    Value = false,
+    Callback = function(Value)
+        print("Ball Indicator:", Value)
+    end,
+})
+
+-- Card 3: Ability ESP
+VisualsTab:Toggle({
+    Title = "Ability ESP",
+    Desc = "shows player equipped abilities",
+    Value = false,
+    Callback = function(Value)
+        print("Ability ESP:", Value)
+    end,
+})
+
+-- Card 4: No Render
+VisualsTab:Toggle({
+    Title = "No Render",
+    Desc = "disables client effects",
+    Value = false,
+    Callback = function(Value)
+        print("No Render:", Value)
+    end,
+})
+
+-- Card 5: Ball Velocity
+VisualsTab:Toggle({
+    Title = "Ball Velocity",
+    Desc = "displays current and peak ball speed",
+    Value = false,
+    Callback = function(Value)
+        print("Ball Velocity:", Value)
+    end,
+})
+
+-- Thêm nút Keybind (Tùy chọn phím tắt giống nút 'None' trong ảnh)
+VisualsTab:Keybind({
+    Title = "Toggle UI Keybind",
+    Desc = "Phím bật/tắt menu",
+    Value = "RightControl",
+    Callback = function(Key)
+        Window:Toggle()
+    end,
+})
